@@ -1,9 +1,9 @@
 # Tech Horizons OS
 
 A minimal Alpine Linux ISO that turns a recycled x86_64 laptop into a student's
-server *and* their course home.
+server (Field Node) *and* their course home.
 
-Students in the Tech Horizons after-school program work from a Pelican case: a
+Students in the Tech Horizons program work from a Pelican case: a
 cable they crimp themselves, a laptop running this OS, and a Mikrotik hAP lite.
 They set up real domains, run real VMs, deploy real Docker. Nothing is simulated.
 
@@ -23,8 +23,6 @@ from a wiped disk, with no manual steps:
 | Boots from disk | hostname, timezone and account all as entered in the installer |
 | Server stack | Docker and libvirtd start on boot |
 
-Not built yet: the greeter (greetd fails on first boot, expected), the
-first-boot wizard, the Hyprland/Waybar shell, and th-hub.
 
 ## Design rules
 - **On rails.** No file manager, no settings app, no workspaces, no stray windows.
