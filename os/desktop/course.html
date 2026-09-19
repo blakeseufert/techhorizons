@@ -1,0 +1,62 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Tech Horizons Course</title>
+<link rel="stylesheet" href="theme.css">
+<main class="content" style="padding:30px 34px">
+  <p class="crumb"><a href="course.html">Knowledgebase</a> / <a href="course.html">Stage 0</a> / Ethernet cable</p>
+
+  <p class="kicker">Stage 0 · 6 min read</p>
+  <h1>Make an Ethernet cable</h1>
+  <p class="standfirst">
+    Every network you will ever touch starts with a cable somebody crimped.
+    Today that somebody is you.
+  </p>
+
+  <hr>
+
+  <h2>Why this matters</h2>
+  <p>
+    A bad crimp is the most common fault in a small network, and it looks
+    exactly like a broken router. Learning to make and <b>test</b> a cable
+    means you can rule it out in thirty seconds for the rest of your life.
+  </p>
+
+  <div class="callout">
+    <div class="callout-title">Check before you cut</div>
+    <p>
+      Measure the run before you cut the cable. You cannot un-cut it, and a
+      cable that is 200mm short is scrap.
+    </p>
+  </div>
+
+  <h2>Steps</h2>
+  <ol class="steps">
+    <li><b>Cut and strip.</b> 60cm of cable, 25mm of jacket off. Do not nick the inner wires.</li>
+    <li><b>Sort to T568B.</b> Orange-white, orange, green-white, blue, blue-white, green, brown-white, brown.</li>
+    <li><b>Trim flat.</b> Hold the order and cut square, about 12mm past the jacket.</li>
+    <li><b>Seat in the plug.</b> Every wire to the very end. Check through the plastic before you crimp.</li>
+    <li><b>Crimp.</b> Firm and complete, one squeeze.</li>
+    <li><b>Test.</b> Both ends in the tester. All eight lights in order, or start again.</li>
+  </ol>
+
+  <hr>
+  <p class="muted">0 of 6 done · content is placeholder and will come from the course repo</p>
+</main>
+<script>
+// The server name is substituted into this page by installer/install.sh --
+// a file:// page cannot read /etc/hostname and th-hub does not exist yet.
+//
+// The sentinel is assembled at runtime ON PURPOSE. install.sh seds the literal
+// token across the whole file, script included, so spelling it out here turned
+// this fallback into "replace the real hostname with the fallback text" and it
+// silently undid the substitution it was meant to back up.
+const TOKEN = "@@" + "SERVER_NAME" + "@@";
+document.querySelectorAll("h1, .node-label, .kicker").forEach(n => {
+  if (n.textContent.includes(TOKEN))
+    n.textContent = n.textContent.replace(TOKEN, "your Field Node");
+});
+const here = location.pathname.split("/").pop();
+document.querySelectorAll(".nav a").forEach(a => {
+  if (a.getAttribute("href") === here) a.classList.add("active");
+});
+</script>

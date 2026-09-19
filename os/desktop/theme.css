@@ -1,0 +1,196 @@
+/* Tech Horizons — shared styles for every web surface.
+   Taken from the Figma frame "Linux".
+
+   This replaces the dark navy scheme. The design is warm and editorial: an
+   off-white page, near-black text, one orange accent, Archivo for display
+   and Inter for reading. The dark charcoal only survives in the dock.
+
+   Archivo is bundled with the ISO (OFL) because Alpine has no package for
+   it; Inter comes from font-inter. */
+
+:root {
+  --paper:      #FAF8F4;  /* window background */
+  --paper-sunk: #F1EEE7;  /* insets, table stripes */
+  --ink:        #1A1A18;  /* body text */
+  --ink-soft:   #57564E;  /* secondary text */
+  --ink-faint:  #8A887E;  /* labels, metadata */
+  --rule:       #E2DED4;  /* hairlines */
+  --accent:     #FF6846;  /* the one warm accent */
+  --accent-ink: #C4442A;  /* accent text on paper, for contrast */
+  --sage:       #DBE4C6;
+  --char:       #282A29;
+
+  --radius:      16px;
+  --radius-sm:   8px;
+  --font-display: Archivo, Inter, system-ui, sans-serif;
+  --font-body:    Inter, system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- app shell: sidebar + content ------------------------------------ */
+.shell { display: flex; height: 100%; }
+
+.sidebar {
+  width: 232px;
+  flex: 0 0 232px;
+  padding: 22px 18px;
+  border-right: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.progress-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+.progress-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--rule);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.progress-fill { height: 100%; background: var(--accent); }
+
+.node-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  margin-bottom: 10px;
+}
+
+.nav a {
+  display: block;
+  padding: 7px 10px;
+  margin: 0 -10px;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  text-decoration: none;
+}
+.nav a:hover { background: var(--paper-sunk); }
+.nav a.active { background: var(--paper-sunk); font-weight: 600; }
+
+.content { flex: 1; overflow: auto; padding: 34px 40px; }
+
+/* --- editorial article ------------------------------------------------ */
+.crumb {
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-bottom: 26px;
+}
+.crumb a { color: var(--accent-ink); text-decoration: none; }
+
+.kicker {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0 0 14px;
+  max-width: 16ch;
+}
+h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 19px;
+  margin: 32px 0 10px;
+}
+.standfirst { font-size: 16px; color: var(--ink-soft); max-width: 62ch; }
+
+hr { border: none; border-top: 1px solid var(--rule); margin: 26px 0; }
+p  { max-width: 68ch; }
+
+/* A callout the student must not skim past. */
+.callout {
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 22px 0;
+  max-width: 68ch;
+}
+.callout .callout-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  margin-bottom: 6px;
+}
+.callout p { margin: 0; color: var(--ink-soft); }
+
+/* Numbered steps, with the number set as a small accent ordinal. */
+ol.steps { list-style: none; counter-reset: step; padding: 0; margin: 16px 0; }
+/* Indent + absolutely positioned ordinal, NOT grid. Course content is
+   generated from markdown, so an <li> is a mix of bare text and inline
+   elements -- with display:grid each of those runs becomes its own grid item
+   and the text collapses into a one-word-per-line column. */
+ol.steps li {
+  counter-increment: step;
+  position: relative;
+  padding: 10px 0 10px 34px;
+  border-top: 1px solid var(--rule);
+  max-width: 70ch;
+}
+ol.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 13px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-ink);
+}
+
+/* --- cards ------------------------------------------------------------ */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.card {
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--paper);
+}
+.card h3 {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 8px;
+}
+.card .big { font-family: var(--font-display); font-size: 26px; font-weight: 700; }
+.card p { color: var(--ink-soft); font-size: 14px; margin: 6px 0 0; }
+
+.muted { color: var(--ink-faint); font-size: 13px; }

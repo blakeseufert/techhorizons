@@ -1,0 +1,21 @@
+/* Shared look for every Tech Horizons surface.
+   One design system across installer, greeter, course and app store -- the
+   whole OS is HTML, so this file is the entire visual language. */
+:root{
+  --mck-blue:#0F216D; --mck-hover:#2D3FBF; --mck-tint:#E8ECFB;
+  --bg:#080B18; --panel:#0E1428; --line:#1E2742;
+  --text:#EEF1FA; --muted:#8590AE; --ok:#3DD68C; --warn:#FFB454; --bad:#FF6B6B;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font:400 15px/1.6 Inter,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{letter-spacing:-.015em; margin:0 0 10px}
+a{color:#8FA2FF}
+code,pre{font-family:"JetBrains Mono NL",ui-monospace,monospace}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-thumb{background:#1E2742; border-radius:6px}
+::selection{background:var(--mck-hover); color:#fff}

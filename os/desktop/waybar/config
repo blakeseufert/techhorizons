@@ -1,0 +1,104 @@
+{
+  "layer": "top",
+  "position": "bottom",
+  "height": 48,
+  "margin-top": 0,
+  "margin-bottom": 0,
+  "margin-left": 0,
+  "margin-right": 0,
+  "spacing": 8,
+  "modules-left": [
+    "custom/wordmark",
+    "custom/vms",
+    "custom/containers",
+    "custom/meters"
+  ],
+  "modules-center": [
+    "custom/clock"
+  ],
+  "modules-right": [
+    "custom/update",
+    "battery",
+    "custom/close",
+    "custom/display",
+    "network",
+    "custom/lock"
+  ],
+  "custom/wordmark": {
+    "format": "TECH HORIZONS",
+    "tooltip": false,
+    "on-click": "/opt/techhorizons/desktop/drawer.sh"
+  },
+  "custom/update": {
+    "exec": "/opt/techhorizons/desktop/bar/update.sh",
+    "return-type": "json",
+    "interval": 900,
+    "tooltip": true,
+    "on-click": "/opt/techhorizons/desktop/drawer.sh",
+    "exec-on-event": true
+  },
+  "custom/vms": {
+    "exec": "/opt/techhorizons/desktop/bar/count.sh vms",
+    "return-type": "json",
+    "interval": 10,
+    "on-click": "/opt/techhorizons/desktop/open.sh vms"
+  },
+  "custom/containers": {
+    "exec": "/opt/techhorizons/desktop/bar/count.sh containers",
+    "return-type": "json",
+    "interval": 10,
+    "on-click": "/opt/techhorizons/desktop/open.sh docker"
+  },
+  "custom/meters": {
+    "exec": "/opt/techhorizons/desktop/bar/meters.sh",
+    "return-type": "json",
+    "interval": 5,
+    "tooltip": true,
+    "on-click": "/opt/techhorizons/desktop/panel.sh system",
+    "exec-on-event": true
+  },
+  "network": {
+    "format-wifi": " ",
+    "format-ethernet": " ",
+    "format-disconnected": " ",
+    "tooltip-format": "{ifname}  {ipaddr}",
+    "on-click": "/opt/techhorizons/desktop/panel.sh network",
+    "tooltip": true,
+    "format-linked": " "
+  },
+  "custom/lock": {
+    "format": " ",
+    "tooltip": false,
+    "on-click": "/opt/techhorizons/desktop/lock.sh"
+  },
+  "custom/clock": {
+    "exec": "/opt/techhorizons/desktop/bar/clock.sh",
+    "return-type": "json",
+    "interval": 20,
+    "tooltip": false,
+    "on-click": "/opt/techhorizons/desktop/panel.sh clock",
+    "exec-on-event": true
+  },
+  "battery": {
+    "states": {
+      "warning": 20,
+      "critical": 10
+    },
+    "format": "{capacity}%",
+    "format-charging": "\u26a1 {capacity}%",
+    "format-plugged": "\u26a1 {capacity}%",
+    "format-full": "\u26a1 full",
+    "tooltip-format": "{timeTo}"
+  },
+  "custom/display": {
+    "format": " ",
+    "tooltip": false,
+    "on-click": "/opt/techhorizons/desktop/panel.sh display",
+    "exec-on-event": true
+  },
+  "custom/close": {
+    "format": " ",
+    "tooltip": false,
+    "on-click": "hyprctl dispatch killactive"
+  }
+}

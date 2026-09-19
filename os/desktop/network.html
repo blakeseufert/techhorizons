@@ -1,0 +1,37 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Tech Horizons Network</title>
+<link rel="stylesheet" href="theme.css">
+<div class="shell">
+  <aside class="sidebar">
+    <div class="progress-label">Coursework (5%)</div>
+    <div class="progress-track"><div class="progress-fill" style="width:5%"></div></div>
+    <div class="node-label">Field node: @@SERVER_NAME@@</div>
+    <nav class="nav">
+      <a href="home.html"    id="nav-home">Dashboard</a>
+      <a href="vms.html"     id="nav-vms">Virtual machines</a>
+      <a href="docker.html"  id="nav-docker">Containers</a>
+      <a href="apps.html"    id="nav-apps">App Store</a>
+      <a href="course.html"  id="nav-course">Coursework</a>
+    </nav>
+  </aside>
+  <main class="content"><p class="kicker">Field node · @@SERVER_NAME@@</p><h1>Network</h1><p class="standfirst">th-hub will serve this surface.</p></main>
+</div>
+<script>
+// The server name is substituted into this page by installer/install.sh --
+// a file:// page cannot read /etc/hostname and th-hub does not exist yet.
+//
+// The sentinel is assembled at runtime ON PURPOSE. install.sh seds the literal
+// token across the whole file, script included, so spelling it out here turned
+// this fallback into "replace the real hostname with the fallback text" and it
+// silently undid the substitution it was meant to back up.
+const TOKEN = "@@" + "SERVER_NAME" + "@@";
+document.querySelectorAll("h1, .node-label, .kicker").forEach(n => {
+  if (n.textContent.includes(TOKEN))
+    n.textContent = n.textContent.replace(TOKEN, "your Field Node");
+});
+const here = location.pathname.split("/").pop();
+document.querySelectorAll(".nav a").forEach(a => {
+  if (a.getAttribute("href") === here) a.classList.add("active");
+});
+</script>

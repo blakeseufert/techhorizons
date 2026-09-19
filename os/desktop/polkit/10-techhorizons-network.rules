@@ -1,0 +1,13 @@
+// The student may run their own network. Installed by installer/install.sh.
+//
+// Alpine's stock rule only lets plugdev edit saved connections; joining a
+// Wi-Fi network (network-control) and scanning for one (wifi.scan) still ask
+// for an administrator, and there is no polkit agent on this desktop to ask
+// with -- so the Wi-Fi tab silently did nothing on a laptop at home. The
+// student's account is in plugdev.
+polkit.addRule(function(action, subject) {
+    if (action.id.indexOf("org.freedesktop.NetworkManager.") === 0 &&
+        subject.isInGroup("plugdev")) {
+        return polkit.Result.YES;
+    }
+});

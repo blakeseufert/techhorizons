@@ -1,0 +1,65 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Tech Horizons</title>
+<link rel="stylesheet" href="theme.css">
+<div class="shell">
+  <aside class="sidebar">
+    <div class="progress-label">Coursework (5%)</div>
+    <div class="progress-track"><div class="progress-fill" style="width:5%"></div></div>
+    <div class="node-label">Field node: @@SERVER_NAME@@</div>
+    <nav class="nav">
+      <a href="home.html"    id="nav-home">Dashboard</a>
+      <a href="vms.html"     id="nav-vms">Virtual machines</a>
+      <a href="docker.html"  id="nav-docker">Containers</a>
+      <a href="apps.html"    id="nav-apps">App Store</a>
+      <a href="course.html"  id="nav-course">Coursework</a>
+    </nav>
+  </aside>
+  <main class="content">
+    <p class="kicker">Field node</p>
+    <h1>@@SERVER_NAME@@</h1>
+    <div class="cards">
+      <div class="card">
+        <h3>Progress</h3>
+        <div class="big">Stage 0</div>
+        <p>Make an Ethernet cable</p>
+        <div class="progress-track" style="margin-top:12px"><div class="progress-fill" style="width:5%"></div></div>
+        <p class="muted">1 of 24 tasks complete</p>
+      </div>
+      <div class="card">
+        <h3>Virtual machines</h3>
+        <div class="big">0</div>
+        <p>Nothing running yet. You will build your first VM in Stage 1.</p>
+      </div>
+      <div class="card">
+        <h3>Containers</h3>
+        <div class="big">0</div>
+        <p>Docker is installed and ready for Stage 2.</p>
+      </div>
+      <div class="card">
+        <h3>Evidence</h3>
+        <div class="big">0</div>
+        <p>Press Print Screen any time to capture proof of your work.</p>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:26px">Placeholder surface — th-hub will serve this with live data.</p>
+  </main>
+</div>
+<script>
+// The server name is substituted into this page by installer/install.sh --
+// a file:// page cannot read /etc/hostname and th-hub does not exist yet.
+//
+// The sentinel is assembled at runtime ON PURPOSE. install.sh seds the literal
+// token across the whole file, script included, so spelling it out here turned
+// this fallback into "replace the real hostname with the fallback text" and it
+// silently undid the substitution it was meant to back up.
+const TOKEN = "@@" + "SERVER_NAME" + "@@";
+document.querySelectorAll("h1, .node-label, .kicker").forEach(n => {
+  if (n.textContent.includes(TOKEN))
+    n.textContent = n.textContent.replace(TOKEN, "your Field Node");
+});
+const here = location.pathname.split("/").pop();
+document.querySelectorAll(".nav a").forEach(a => {
+  if (a.getAttribute("href") === here) a.classList.add("active");
+});
+</script>

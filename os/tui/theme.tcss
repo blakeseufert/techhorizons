@@ -1,0 +1,218 @@
+/* Tech Horizons — terminal UI.
+   From the Claude Design project, section 07 — Terminal.
+
+   "The CLI is dark only — a terminal has no light theme worth shipping.
+    Everything is JetBrains Mono on ink-deep, and the whole visual system
+    reduces to three signals: sage for content, dim sage for chrome, coral for
+    the one thing the cursor is on. No radius, no fill except the caret and the
+    selected row. Keybind hints live on a bottom rail and never move."
+
+   Three signals, and nothing else:
+     sage      #DBE4C6   content
+     dim sage  #DBE4C6 at 20-45%   chrome, labels, rails, hairlines
+     coral     #FF6846   whatever the cursor is on, and only that
+
+   "No radius" is free in a terminal. The one exception the design allows --
+   6px on the lock box -- maps to `border: round`, box-drawing corners being
+   the only radius a character grid has. */
+
+Screen {
+    background: #141615;
+    color: #DBE4C6;
+    layout: vertical;
+}
+
+/* --- the two rails -------------------------------------------------- */
+/* Header: "th │ <context>" left, status right. */
+#rail-top {
+    height: 1;
+    width: 100%;
+    background: #181A19;
+    color: #DBE4C6 45%;
+    padding: 0 2;
+    layout: horizontal;
+}
+#rail-top-left  { width: 1fr; content-align: left middle; }
+#rail-top-right { width: auto; content-align: right middle; }
+
+/* Keybind hints. The design is explicit that these never move, so the rail is
+   docked and always present, even on screens with nothing to say. */
+#rail-bottom {
+    dock: bottom;
+    height: 1;
+    width: 100%;
+    background: #181A19;
+    color: #DBE4C6 45%;
+    padding: 0 2;
+}
+
+/* --- body ------------------------------------------------------------ */
+#body {
+    width: 100%;
+    height: 1fr;
+    padding: 1 3;
+}
+
+/* The prompt line is the one piece of coral prose the design uses -- it is
+   what the cursor is on. Everything else stays sage. */
+#prompt {
+    color: #FF6846;
+    margin-bottom: 0;
+}
+#hint {
+    color: #DBE4C6 45%;
+    margin-bottom: 1;
+}
+
+/* --- inputs ---------------------------------------------------------- */
+/* Unfocused: hairline. Focused: coral edge plus the 7% coral wash, which with
+   the caret is the only fill on the screen. */
+Input {
+    /* The design draws the field at roughly a third of the frame, not full
+       bleed -- a full-width box on a 110-column terminal reads as a form, and
+       this is meant to read as a prompt. */
+    width: 52;
+    background: #141615;
+    color: #DBE4C6;
+    border: solid #DBE4C6 22%;
+    padding: 0 1;
+    height: 3;
+    margin-bottom: 1;
+}
+Input:focus {
+    border: solid #FF6846;
+    background: #FF6846 7%;
+}
+
+/* --- validation ------------------------------------------------------ */
+/* "a coral mark plus sage text, never coral prose" */
+.check      { color: #DBE4C6 45%; }
+.check-ok   { color: #DBE4C6 45%; }
+.check-warn { color: #DBE4C6; }
+#checks { height: auto; margin-bottom: 1; }
+
+/* --- key/value table -------------------------------------------------- */
+#kv { height: auto; margin-bottom: 1; }
+.kv-head { color: #DBE4C6 45%; }
+.kv-key  { color: #DBE4C6 45%; }
+.kv-val  { color: #DBE4C6; }
+
+/* --- buttons ---------------------------------------------------------- */
+/* Primary is the only filled control; secondary is bare text. */
+Button {
+    height: 1;
+    min-width: 6;
+    border: none;
+    background: transparent;
+    color: #DBE4C6;
+    margin-right: 3;
+    padding: 0 1;
+}
+Button.-primary {
+    background: #FF6846;
+    color: #141615;
+    text-style: bold;
+}
+Button:focus {
+    background: #FF6846;
+    color: #141615;
+    text-style: bold;
+}
+Button.-ghost:focus {
+    background: transparent;
+    color: #FF6846;
+    text-style: bold underline;
+}
+#buttons { height: auto; layout: horizontal; margin-top: 1; }
+
+.dim { color: #DBE4C6 45%; }
+.sage { color: #DBE4C6; }
+.coral { color: #FF6846; }
+
+/* --- auth screens (sign in / locked) ---------------------------------- */
+/* "The lock box sits centred in the lower third so an animated background can
+    run in the field above it without ever being covered. Radius drops to 6px."
+   2fr/1fr puts the box's top edge exactly on the lower third; the banner
+   paints the whole field above it and keeps animating across. */
+/* min-height so a short screen -- these are recycled laptops -- steals rows
+   from the animation rather than from the box you have to type into. */
+#field { height: 2fr; min-height: 5; width: 100%; }
+/* Centred in the band, not pinned to its top: when a wrong password adds a
+   line the box grows, and pinned to the top it grew straight into the keybind
+   rail with the bottom border off-screen. */
+/* 14, not 11: Restart and Shut down add two rows to the lock box, and on a
+   24-row screen the old floor let it clip through the keybind rail. */
+#lower { height: 1fr; min-height: 14; width: 100%; align: center middle; }
+
+/* `border: round` is the only 6px a character grid has. */
+#authbox {
+    width: 56;
+    height: auto;
+    border: round #DBE4C6 22%;
+    background: #141615;
+    padding: 1 2;
+}
+#node     { color: #DBE4C6; text-style: bold; margin-bottom: 0; }
+#pw-label { margin-bottom: 0; }
+#authbox Input { width: 100%; margin-bottom: 0; }
+#error { height: auto; margin-top: 0; }
+
+/* --- choice lists ----------------------------------------------------- */
+/* Left alone, RadioSet arrives in Textual's stock blue with a grey gutter --
+   three colours the design system does not have. Reduce it to the same three
+   signals: dim sage chrome, sage content, and coral on the row the cursor is
+   on, which is the one fill the design allows besides the caret. */
+RadioSet {
+    width: 72;
+    height: auto;
+    padding: 0 1;
+    background: #141615;
+    border: solid #DBE4C6 22%;
+    margin-bottom: 1;
+}
+RadioSet:focus { border: solid #FF6846; background-tint: #FF6846 0%; }
+
+RadioSet > RadioButton {
+    background: transparent;
+    color: #DBE4C6;
+    padding: 0;
+}
+/* The ● gutter: dim until chosen, then coral. */
+RadioSet > RadioButton > .toggle--button {
+    color: #DBE4C6 22%;
+    background: #141615;
+}
+/* The label component defaults to white, which is a fourth colour. */
+RadioSet > RadioButton > .toggle--label {
+    color: #DBE4C6;
+    background: transparent;
+}
+RadioSet > RadioButton.-on > .toggle--button { color: #FF6846; }
+
+/* The cursor row. Coral fill, ink text -- same treatment as the primary
+   button, so "where you are" reads the same everywhere. */
+RadioSet:focus > RadioButton.-selected > .toggle--label {
+    background: #FF6846;
+    color: #141615;
+    text-style: bold;
+}
+RadioSet:blur > RadioButton.-selected > .toggle--label {
+    background: #DBE4C6 15%;
+    color: #DBE4C6;
+}
+
+/* --- progress --------------------------------------------------------- */
+/* Same story as RadioSet: stock Textual paints the bar $primary blue, the
+   percentage $secondary, and a finished bar $success green. */
+ProgressBar { width: 72; height: 1; margin-bottom: 1; }
+Bar { width: 1fr; }
+Bar > .bar--bar          { color: #FF6846; background: #DBE4C6 15%; }
+Bar > .bar--complete     { color: #DBE4C6; background: #DBE4C6 15%; }
+Bar > .bar--indeterminate{ color: #FF6846; background: #DBE4C6 15%; }
+PercentageStatus { color: #DBE4C6 45%; }
+
+/* Restart / Shut down on the lock screen. Ghost buttons: they are the least
+   likely thing a student wants, and should never compete with the password
+   field for attention. */
+#power { height: auto; layout: horizontal; margin-top: 1; }
+#power Button { margin-right: 2; min-width: 11; }

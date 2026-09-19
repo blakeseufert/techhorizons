@@ -1,0 +1,167 @@
+/* Tech Horizons dock.
+   Values taken from the Figma frame "Linux" (1920x1200):
+     dock            48px tall, full width, #282A29 at 80%, 3px backdrop blur
+     pill            32px tall, 8px radius, #DBE4C6 at 15%
+     alert pill      #FF7347 at 40%
+     dock text       #DBE4C6, clock in white
+     meter track     #48473B, fill gradient #DBE4C6 -> #FF6846
+
+   GTK has no backdrop-filter, so the translucency is flat rather than blurred.
+   That is the one part of the design a GTK bar cannot reproduce. */
+
+* {
+  font-family: Archivo, Inter, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+}
+
+window#waybar {
+  background: rgba(40, 42, 41, 0.8);
+  color: #DBE4C6;
+}
+
+/* --- pills ------------------------------------------------------------ */
+#custom-wordmark,
+#custom-browser,
+#custom-update,
+#custom-vms,
+#custom-containers,
+#custom-meters,
+#network,
+#pulseaudio,
+#custom-lock {
+  background: rgba(219, 228, 198, 0.15);
+  color: #DBE4C6;
+  border-radius: 8px;
+  padding: 0 12px;
+  margin: 8px 4px;
+}
+
+#custom-wordmark {
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 0 14px;
+  margin-left: 8px;
+}
+
+#custom-browser {
+  font-size: 14px;
+  padding: 0 11px;
+}
+
+/* The update pill is the one warm accent in the dock, exactly as drawn. */
+#custom-update {
+  background: rgba(255, 115, 71, 0.4);
+  color: #FFEDE6;
+}
+#custom-update.clean {
+  /* Nothing to update: fall back to a normal pill rather than shouting. */
+  background: rgba(219, 228, 198, 0.15);
+  color: #DBE4C6;
+}
+
+/* CPU / MEM / DISK readout: small, tabular, three short lines' worth of
+   information on one line because GTK cannot stack text inside a module. */
+#custom-meters {
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+#clock {
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+#custom-lock {
+  margin-right: 8px;
+}
+
+/* --- interaction ------------------------------------------------------ */
+#custom-wordmark:hover,
+#custom-vms:hover,
+#custom-containers:hover,
+#network:hover,
+#pulseaudio:hover,
+#custom-lock:hover {
+  background: rgba(219, 228, 198, 0.28);
+  color: #FFFFFF;
+}
+#custom-update:hover {
+  background: rgba(255, 115, 71, 0.6);
+  color: #FFFFFF;
+}
+
+tooltip {
+  background: #282A29;
+  color: #DBE4C6;
+  border: 1px solid rgba(219, 228, 198, 0.25);
+  border-radius: 8px;
+}
+
+/* --- icons ------------------------------------------------------------ */
+/* Lucide, recoloured to sage at build time. GTK cannot restyle an SVG it
+   loads as a background-image -- currentColor comes out black -- so the colour
+   is baked into the file rather than set here.
+   Icon-only buttons still need a box to draw in: an empty label has no size,
+   so min-width and min-height do the work that text used to. */
+#custom-display,
+#custom-lock,
+#custom-close,
+#network {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px 18px;
+  min-width: 22px;
+  min-height: 22px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+#custom-display { background-image: url("/opt/techhorizons/desktop/assets/icons/monitor.svg"); }
+/* Ethernet is how a Field Node is meant to be connected, so that is the
+   resting icon. waybar puts .disconnected on the module when the link is
+   down, which swaps in the slashed one. */
+#network        { background-image: url("/opt/techhorizons/desktop/assets/icons/ethernet-port.svg"); }
+#network.disconnected,
+#network.linked { background-image: url("/opt/techhorizons/desktop/assets/icons/unplug.svg"); }
+#custom-lock    { background-image: url("/opt/techhorizons/desktop/assets/icons/lock.svg"); }
+#custom-close   { background-image: url("/opt/techhorizons/desktop/assets/icons/x.svg"); }
+
+/* These keep their numbers, so the icon sits to the left of the text. */
+#custom-vms,
+#custom-containers,
+#custom-meters {
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  background-size: 16px 16px;
+  padding-left: 32px;
+}
+#custom-vms        { background-image: url("/opt/techhorizons/desktop/assets/icons/server.svg"); }
+#custom-containers { background-image: url("/opt/techhorizons/desktop/assets/icons/box.svg"); }
+#custom-meters     { background-image: url("/opt/techhorizons/desktop/assets/icons/cpu.svg"); }
+
+/* Every clickable pill behaves the same on hover. The display button used to
+   be styled differently from its neighbours for no reason anyone could name. */
+#custom-display:hover,
+#custom-close:hover,
+#custom-meters:hover,
+#custom-containers:hover,
+#custom-update:hover,
+#battery:hover {
+  background-color: rgba(219, 228, 198, 0.28);
+}
+
+/* Held down while its panel is open, so a student can see which one they are
+   looking at -- and that clicking it again is what closes it. waybar adds
+   .active to a custom module whose on-click process is still running, which is
+   exactly the lifetime of the panel it launched. */
+#custom-display.active,
+#custom-meters.active,
+#custom-clock.active,
+#custom-update.active,
+#network.active {
+  background-color: #FF6846;
+}

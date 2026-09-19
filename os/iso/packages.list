@@ -1,0 +1,108 @@
+# Tech Horizons OS — target system packages.
+# Every name here was verified present in Alpine v3.23 x86_64 (main/community).
+# These are baked into the ISO's apks/ repo so installs work with NO internet —
+# students have no network until the Mikrotik stage of the course.
+
+# --- base ---
+alpine-base
+linux-lts
+linux-firmware-none
+eudev
+udev-init-scripts
+libinput
+dbus
+elogind
+polkit-elogind
+tzdata
+chrony
+
+# --- desktop shell ---
+waylock
+swaybg
+fontconfig
+hyprland
+waybar
+chromium
+cage
+greetd
+greetd-openrc
+brightnessctl
+seatd
+seatd-openrc
+foot
+grim
+slurp
+wl-clipboard
+mesa-dri-gallium
+mesa-va-gallium
+mesa-egl
+mesa-gles
+xdg-desktop-portal
+xdg-desktop-portal-wlr
+xdg-desktop-portal-gtk
+
+# --- audio ---
+pipewire
+pipewire-pulse
+wireplumber
+
+# --- networking ---
+networkmanager
+networkmanager-cli
+
+# --- the student's server: VMs + containers ---
+libvirt-daemon
+libvirt-client
+qemu-system-x86_64
+qemu-img
+docker
+docker-cli-compose
+
+# --- terminal UI: installer, login and lock screens ---
+py3-textual
+py3-rich
+
+# --- th-hub (local service behind every web surface) ---
+python3
+py3-pip
+py3-fastapi
+uvicorn
+py3-libvirt
+py3-jinja2
+py3-markdown
+git
+
+# --- remote access (their machine is a server; also lets us debug the ISO) ---
+openssh
+
+# --- install-time tooling ---
+e2fsprogs
+dosfstools
+parted
+sfdisk
+util-linux
+lsblk
+efibootmgr
+grub
+grub-efi
+grub-bios
+
+# --- fonts (Inter matches McKinnon branding) ---
+# The dock's CPU/MEM/DISK pill opens this.
+btop
+
+# So the lock screen's Restart and Shut down can work: the student's
+# session is not root and cannot reboot on its own.
+doas
+
+# Compiles desktop/assets/cursor into the pointer theme at install time.
+hyprcursor
+hyprcursor-util
+# ...and the XCursor half of it, for GTK and Chromium.
+rsvg-convert
+xcursorgen
+
+font-inter
+font-dejavu
+font-jetbrains-mono
+font-jetbrains-mono-nerd

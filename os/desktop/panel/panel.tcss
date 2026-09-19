@@ -1,0 +1,61 @@
+/* The dock's popup panels (network, display). Same three signals as the rest of the system: sage for
+   content, dim sage for chrome, coral for the one thing that needs you. */
+Screen {
+    background: #141615;
+    color: #DBE4C6;
+    layout: vertical;
+    padding: 1 2;
+}
+
+#tabs { height: 1; width: 100%; margin-bottom: 1; }
+
+Button {
+    height: 1;
+    min-width: 10;
+    border: none;
+    background: transparent;
+    color: #DBE4C6 45%;
+    margin-right: 2;
+    padding: 0 1;
+}
+/* The tab you are on is filled, the same way the selected row is everywhere
+   else -- not underlined, not merely brighter. */
+Button.-on, Button:focus {
+    background: #FF6846;
+    color: #141615;
+    text-style: bold;
+}
+
+#head { height: 2; width: 100%; margin-bottom: 1; }
+#body { height: 1fr; width: 100%; }
+
+#join { height: auto; width: 100%; margin-top: 1; }
+#join-label { height: auto; }
+Input {
+    width: 40;
+    height: 3;
+    background: #141615;
+    color: #DBE4C6;
+    border: solid #FF6846;
+    padding: 0 1;
+}
+
+#foot { height: 1; width: 100%; color: #DBE4C6 45%; }
+.dim { color: #DBE4C6 45%; }
+
+/* A card: a raised surface a group of controls sits on, the way the wizard's
+   input sits on one. Panels are terminals, so this is the only depth cue a
+   character grid can give a group of options. */
+.card {
+    background: #181A19;
+    border: solid #DBE4C6 22%;
+    padding: 0 2;
+    height: auto;
+    width: 100%;
+    margin-bottom: 1;
+}
+.card .label { height: 1; color: #DBE4C6 45%; }
+.card Horizontal { height: 1; }
+#sizes Button { min-width: 6; margin-right: 1; }
+#volume Button { min-width: 3; margin-right: 1; }
+#vol { width: 6; content-align: center middle; }

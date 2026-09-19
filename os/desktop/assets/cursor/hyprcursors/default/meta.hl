@@ -1,0 +1,25 @@
+# Lucide's mouse-pointer-2, filled.
+#
+# Lucide ships it stroke-only (fill="none"), which as a cursor is a hollow
+# outline you lose against anything busy. Filled sage with an ink-deep outline
+# reads on the wallpaper and on a white browser page alike -- the same reason
+# every cursor on earth is a light shape with a dark edge.
+#
+# The hotspot is the arrow's tip. The path starts at 4.037,4.688 in a 24-unit
+# box, so ~0.17 in on both axes; get this wrong and every click lands somewhere
+# the student did not point.
+resize_algorithm = bilinear
+hotspot_x = 0.17
+hotspot_y = 0.17
+
+# The size is ignored for an SVG, but it must still be a real number -- 0 is
+# rejected with "Invalid meta (missing?)", which does not hint at the cause.
+define_size = 24, pointer.svg
+
+# Every name an application might ask for that means "the ordinary arrow".
+# Anything not listed falls back to the compositor's built-in shape, which is
+# why text carets and resize arrows still look normal.
+define_override = default
+define_override = left_ptr
+define_override = arrow
+define_override = top_left_arrow
