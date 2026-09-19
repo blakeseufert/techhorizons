@@ -14,10 +14,16 @@
 # assume. A wizard that "must" be on step 3 has been on a root prompt before.
 set -euo pipefail
 
-VMID="${TH_VMID:-201}"
-HOST="${TH_JUMP:-px-slow}"
-NODE="${TH_NODE:-10.0.5.168}"
 SRC="$(cd -- "$(dirname -- "$0")/.." && pwd)"
+[ -f "$SRC/th.env" ] && . "$SRC/th.env"
+
+# TH_VMID  required  the test VM's id on the hypervisor
+# TH_HOST  required  host running `qm` -- this drives the VM through the
+#                    Proxmox QEMU monitor, so it is Proxmox-specific
+# TH_NODE  required  the guest's own address, for `click` only
+VMID="${TH_VMID:?set TH_VMID to the test VM id (or put it in th.env)}"
+HOST="${TH_HOST:-${TH_JUMP:?set TH_HOST to the host running qm (or put it in th.env)}}"
+NODE="${TH_NODE:-}"
 
 monitor() { ssh -o BatchMode=yes "root@$HOST" 'while read -r l; do echo "$l" | qm monitor '"$VMID"' >/dev/null; sleep 0.12; done' 2>/dev/null; }
 

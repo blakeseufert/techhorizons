@@ -19,10 +19,17 @@
 # PermitRootLogin no, so nothing on one is reachable either. That is the point.
 set -euo pipefail
 
-NODE="${TH_NODE:-10.0.5.168}"      # the field node
-JUMP="${TH_JUMP:-px-slow}"         # Proxmox host used only to reach its LAN
 SRC="$(cd -- "$(dirname -- "$0")/.." && pwd)"
-SSH=(ssh -o BatchMode=yes -o ConnectTimeout=15 -J "root@$JUMP" "root@$NODE")
+[ -f "$SRC/th.env" ] && . "$SRC/th.env"
+
+# TH_NODE  required  the field node's address
+# TH_JUMP  unset     optional ssh jump host, if the node is on a network you
+#                    cannot reach directly
+NODE="${TH_NODE:?set TH_NODE to the field node address (or put it in th.env)}"
+JUMP="${TH_JUMP:-}"
+SSH=(ssh -o BatchMode=yes -o ConnectTimeout=15)
+[ -n "$JUMP" ] && SSH+=(-J "root@$JUMP")
+SSH+=("root@$NODE")
 
 echo "==> syncing to $NODE"
 # tar over ssh, not rsync: Alpine has no rsync.

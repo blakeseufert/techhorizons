@@ -153,18 +153,22 @@ switcher, no user-visible package manager. Networking troubleshooting lives next
 to the clock and nowhere else.
 
 ## Build & test
-Everything happens in VMs on the Proxmox cluster. **Nothing is ever installed on
-the Proxmox nodes themselves** — they host the VMs and act as an SSH jump host,
-nothing more.
+Everything happens in two VMs. **Nothing is ever installed on the hypervisor
+itself** — it hosts the VMs and, where the VMs are not directly reachable, acts
+as an SSH jump host. Nothing more.
 
-| VM | Node | Role |
-|---|---|---|
-| 200 `th-builder` | px-main | Alpine 3.23 cloud image. Runs `mkimage` and emits the ISO. Exists only to build. 10 cores, 6 GB. |
-| 201 `th-test` | px-slow | Boots the ISO and installs it, exactly like a student laptop. Nested virt on, because the installed OS must itself run KVM guests. |
+| VM | Role |
+|---|---|
+| `th-builder` | Alpine cloud image. Runs `mkimage` and emits the ISO. Exists only to build. 6 cores / 6 GB is comfortable; more cores helps most. |
+| `th-test` | Boots the ISO and installs it, exactly like a student laptop. Nested virt on, because the installed OS must itself run KVM guests. |
 
-`mkimage` needs a native Alpine userspace, which is the only reason 200 exists.
-Drive the whole thing from a workstation with `iso/build-on-vm.sh`.
+`mkimage` needs a native Alpine userspace, which is the only reason the builder
+exists. Drive the whole thing from a workstation with `iso/build-on-vm.sh`.
 
-The VMs are on 10.0.5.0/24, which is not routable from the workstation, so SSH
-goes through the node that hosts the VM: `ssh -J root@px-main root@10.0.5.170`
-for the builder, `ssh -J root@px-slow root@<vm>` for the test VM.
+Point the scripts at your own hosts with `th.env` at the repo root — it is
+gitignored, so your addresses stay out of the repo. See
+[iso/README.md](../iso/README.md) for the full list of variables.
+
+The reference deployment runs both VMs on Proxmox, which is why `dev/vm.sh`
+drives the test VM through `qm monitor`. Any hypervisor works for building;
+only that one dev helper is Proxmox-specific.

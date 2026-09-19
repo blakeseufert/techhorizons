@@ -186,12 +186,12 @@ if __name__ == "__main__":
     # Real busybox output from a field node -- the format that broke the
     # JSON-based version.
     ADDR = """2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
-    inet 10.0.5.168/24 brd 10.0.5.255 scope global dynamic noprefixroute eth0
+    inet 192.0.2.168/24 brd 192.0.2.255 scope global dynamic noprefixroute eth0
        valid_lft 80100sec preferred_lft 80100sec"""
-    ROUTE = """default via 10.0.5.1 dev eth0  src 10.0.5.168  metric 100
-10.0.5.0/24 dev eth0 scope link  src 10.0.5.168  metric 100"""
-    assert parse_addr(ADDR) == "10.0.5.168/24", parse_addr(ADDR)
-    assert parse_gateway(ROUTE, "eth0") == "10.0.5.1", parse_gateway(ROUTE, "eth0")
+    ROUTE = """default via 192.0.2.1 dev eth0  src 192.0.2.168  metric 100
+192.0.2.0/24 dev eth0 scope link  src 192.0.2.168  metric 100"""
+    assert parse_addr(ADDR) == "192.0.2.168/24", parse_addr(ADDR)
+    assert parse_gateway(ROUTE, "eth0") == "192.0.2.1", parse_gateway(ROUTE, "eth0")
     assert parse_gateway(ROUTE, "wlan0") == ""
     assert parse_addr("no address here") == ""
 

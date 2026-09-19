@@ -87,7 +87,7 @@ grub
 grub-efi
 grub-bios
 
-# --- fonts (Inter matches McKinnon branding) ---
+# --- fonts ---
 # The dock's CPU/MEM/DISK pill opens this.
 btop
 

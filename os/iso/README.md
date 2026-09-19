@@ -4,9 +4,9 @@ This directory builds `TechHorizonsOS-<tag>-x86_64.iso` — a ~1.3 GB Alpine
 image that boots straight into a Chromium-kiosk installer and installs the
 whole OS **with no network**.
 
-If you are picking this up cold, read [Two ways to build](#two-ways-to-build)
-and then just run `./iso/build-on-vm.sh`. Everything else here is detail for
-when that goes wrong.
+If you are picking this up cold: you need an Alpine x86_64 machine to build on,
+then `BUILDER=<its address> ./iso/build-on-vm.sh`. Everything below is detail
+for when that is not enough.
 
 ## The one constraint that shapes everything
 
@@ -16,60 +16,63 @@ ever need is baked into an offline apk repo inside the ISO at build time. That
 is why the image is 1.3 GB, why `packages.list` matters so much, and why the
 build needs a signing key even though nothing is published.
 
+## You need an Alpine builder
+
+`mkimage` needs `apk-tools` and `abuild` running natively. **You cannot build
+this on macOS, on Debian/Ubuntu, or in a non-Alpine container.** A throwaway
+Alpine VM is the normal answer:
+
+1. Boot the [Alpine cloud image](https://alpinelinux.org/cloud/) (x86_64) on
+   whatever hypervisor you have. The reference deployment uses Proxmox; nothing
+   about the build cares.
+2. Give it **6+ cores and 6 GB RAM**. Cores matter most — the build compiles an
+   initramfs per kernel flavour. 40 GB of disk is plenty.
+3. Make sure you can SSH in as a user who can run the build as root.
+
+That VM exists only to build. Nothing is installed on the hypervisor itself.
+
 ## Two ways to build
 
 ### From your workstation (normal path)
 
 ```sh
-./iso/build-on-vm.sh
+BUILDER=10.0.0.5 ./iso/build-on-vm.sh
 ```
 
-Ships the source to the builder VM over SSH, builds there, pulls the ISO back
-to `out/`, and publishes a copy to the cluster's ISO store. You need SSH to the
-Proxmox node; it is used only as a jump host.
+Ships the source to the builder over SSH, builds there, and pulls the ISO back
+into `out/`.
 
-### On an Alpine host directly
+### On the Alpine host directly
 
 ```sh
 ./iso/build.sh [outdir]
 ```
 
-Must run **on Alpine x86_64, as root**. `mkimage` needs `apk-tools` and
-`abuild` natively — you cannot build this on macOS, Debian, or in a
-non-Alpine container. Output defaults to `$HOME/iso-out`.
-
-## Where it builds
-
-| VM | Node | Role |
-|---|---|---|
-| 200 `th-builder` | px-main | Alpine cloud image, 10 cores / 6 GB. Runs `mkimage`. Exists only to build. |
-| 201 `th-test` | px-slow | Boots the ISO and installs it, exactly like a student laptop. Nested virt on. |
-
-The VMs sit on 10.0.5.0/24, which is not routable from a workstation, so SSH
-goes through the node that hosts the VM:
-
-```sh
-ssh -J root@px-main root@10.0.5.170     # builder
-```
-
-Nothing is ever installed on the Proxmox nodes themselves. They host the VMs
-and act as a jump host, nothing more.
+Must run **as root, on Alpine x86_64**. Output defaults to `$HOME/iso-out`.
 
 ## Configuration
 
-Both scripts read everything from the environment, so you can point them
-somewhere else without editing anything.
+Every script reads its settings from the environment. Rather than exporting
+them each time, put them in **`th.env` at the repo root** — it is gitignored,
+so your own addresses never land in the repo:
 
-`build-on-vm.sh`:
+```sh
+# th.env
+BUILDER=10.0.0.5
+JUMP=root@hypervisor.example
+ISO_STORE=root@hypervisor.example:/var/lib/vz/template/iso
+```
+
+### `iso/build-on-vm.sh`
 
 | Variable | Default | What |
 |---|---|---|
-| `NODE` | `px-main` | Proxmox node, used only as an SSH jump host |
-| `BUILDER` | `10.0.5.170` | The builder VM's address |
-| `BUILDER_USER` | `root` | User on the builder |
-| `ISO_STORE` | `/mnt/pve/cephfs/template/iso` | Where the finished ISO is published. On cephfs, so any node can attach it |
+| `BUILDER` | **required** | Builder host — address, hostname or ssh alias |
+| `BUILDER_USER` | `root` | Login on the builder |
+| `JUMP` | unset | Optional `ssh -J` jump host, if the builder is on a network you cannot reach directly |
+| `ISO_STORE` | unset | Optional scp destination for the finished ISO, e.g. `user@nas:/srv/iso`. Skipped when unset |
 
-`build.sh`:
+### `iso/build.sh`
 
 | Variable | Default | What |
 |---|---|---|
@@ -77,6 +80,15 @@ somewhere else without editing anything.
 | `ALPINE_TAG` | `edge` | Alpine release tag |
 | `MIRROR` | `https://dl-cdn.alpinelinux.org/alpine` | Package mirror |
 | `TH_DEV_KEY` | unset | Path to an SSH pubkey. **Enables sshd on the live ISO.** Debugging only — never ship an image built with this |
+
+### `dev/` helpers
+
+| Variable | Used by | What |
+|---|---|---|
+| `TH_NODE` | `push.sh`, `vm.sh` | Address of a running field node |
+| `TH_JUMP` | `push.sh` | Optional jump host to reach it |
+| `TH_HOST` | `vm.sh` | Host running `qm` — **Proxmox-specific** |
+| `TH_VMID` | `vm.sh` | The test VM's id |
 
 ### Why edge and not 3.23-stable
 
@@ -93,7 +105,7 @@ ALPINE_BRANCH=3.23-stable ALPINE_TAG=v3.23 ./iso/build.sh
 
 | File | What |
 |---|---|
-| `build-on-vm.sh` | Workstation-side driver. Ships source, builds remotely, fetches and publishes the ISO |
+| `build-on-vm.sh` | Workstation-side driver. Ships source, builds remotely, fetches the ISO |
 | `build.sh` | The actual build. Installs deps, clones aports, runs `mkimage`, collects the image |
 | `mkimg.techhorizons.sh` | The Alpine `mkimage` profile: boot menu, volume label, initramfs features, package set |
 | `genapkovl-techhorizons.sh` | Builds the apkovl — the overlay that configures the live installer environment |
@@ -103,12 +115,11 @@ ALPINE_BRANCH=3.23-stable ALPINE_TAG=v3.23 ./iso/build.sh
 
 Add it to `packages.list` and rebuild. Comments and blank lines are stripped,
 and the name must exist in Alpine `main` or `community` for your tag — a typo
-fails the build partway through `mkimage` with an apk resolution error, not up
-front.
+fails partway through `mkimage` with an apk resolution error, not up front.
 
 ## Gotchas
 
-These all cost real debugging time at least once.
+These each cost real debugging time at least once.
 
 **`mkimage` runs as the unprivileged `build` user.** It cannot traverse a 0700
 `/root`. Both the source tree and the output are staged into build-owned
@@ -130,24 +141,26 @@ their own `update-kernel` and fight for the same cores. It does not fail, it
 just takes far longer than either would alone. Check first:
 
 ```sh
-ssh -J root@px-main root@10.0.5.170 'pgrep -af "build.sh|mkimage.sh"'
+ssh "$BUILDER" 'pgrep -af "build.sh|mkimage.sh"'
 ```
 
-**`qm shutdown` does not reliably stop the builder** even though `acpid` is
+**An apostrophe inside `${VAR:?message}` breaks the script.** Bash reads it as
+an opening quote even inside double quotes, and the error points at the end of
+the file rather than the line. Keep `:?` messages apostrophe-free.
+
+**On Proxmox, `qm shutdown` may not stop the builder** even with `acpid`
 running in the guest. Power it off from inside instead:
 
 ```sh
-ssh -J root@px-main root@10.0.5.170 poweroff
+ssh "$BUILDER" poweroff
 ```
 
-**Expect a long build.** It pulls ~53 packages including Chromium and builds
-an initramfs per kernel flavor.
+**Expect a long build.** It pulls ~53 packages including Chromium and builds an
+initramfs per kernel flavour.
 
 ## Testing the result
 
-Attach the ISO to VM 201 `th-test` and boot it. That VM has nested virt
-enabled on purpose — the installed OS must itself run KVM guests, so a test
-that skips nested virt does not prove the thing works.
-
-`build-on-vm.sh` already publishes to `ISO_STORE` on cephfs, so the image is
-visible from any node in the cluster without copying it again.
+Boot the ISO on a second VM with **nested virtualisation enabled** — the
+installed OS must itself run KVM guests, so a test without nested virt does not
+prove the thing works. Install to a blank disk of at least 32 GB; the installer
+refuses anything smaller, and refuses the install media itself.
